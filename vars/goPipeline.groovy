@@ -1,27 +1,30 @@
 def call() {
     node {
+        // Create an instance of GoUtils and pass pipeline context
+        def goUtils = new org.example.utils.GoUtils(this)
+
         stage('Checkout') {
             checkoutSCM()
         }
 
         stage('Install Go (ARM64)') {
-            org.example.utils.GoUtils.installGoARM64()
+            goUtils.installGoARM64()
         }
 
         stage('Setup Go Dependencies') {
-            org.example.utils.GoUtils.setupDependencies()
+            goUtils.setupDependencies()
         }
 
         stage('Install GoSec (ARM64)') {
-            org.example.utils.GoUtils.installGoSecARM64()
+            goUtils.installGoSec()
         }
 
         stage('Run GoSec Scan') {
-            org.example.utils.GoUtils.runGoSecScan()
+            goUtils.runGoSecScan()
         }
 
         stage('Archive Report') {
-            archiveArtifacts artifacts: 'gosec-report.txt', fingerprint: true
+            goUtils.archiveReport()
         }
     }
 }
